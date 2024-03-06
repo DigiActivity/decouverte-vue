@@ -6,6 +6,18 @@ const listeContact = ref([
     name: "Félix Laviéville",
     phone: "+33.6.06.06.06.06",
   },
+  {
+    name: "Tutu",
+    phone: "+33.6.06.827624",
+  },
+  {
+    name: "Zizou",
+    phone: "+9387535",
+  },
+  {
+    name: "AAAAA",
+    phone: "9284724",
+  },
 ]);
 
 const inputName = ref("");
@@ -13,6 +25,9 @@ const inputPhone = ref("");
 const inputSearch = ref("");
 
 function ajouterContact() {
+  if (inputName.value === "" || inputPhone.value === "") {
+    return;
+  }
   listeContact.value.push({
     name: inputName.value,
     phone: inputPhone.value,
@@ -21,9 +36,26 @@ function ajouterContact() {
   inputPhone.value = "";
 }
 
+// On veut une liste qui prenne en compte la recherche
 const listeContactFiltree = computed(() => {
+  // La computed() va s'actualiser automatiquement dès qu'une ref
+  // (ou une autre computed) incluse dans la fonction, est mise à jour.
   return listeContact.value.filter((contact) => {
+    // .filter() va parcourir le tableau
+    // pour un élément donné, il vérifie quelque chose (true / false)
+    // si true, alors l'élément est gardé, sinon, il est abandonné
     return contact.name.includes(inputSearch.value);
+  });
+});
+
+// on veut trier par ordre alphabétique
+const listeContactFiltreeOrdonnee = computed(() => {
+  return listeContactFiltree.value.toSorted((contact1, contact2) => {
+    if (contact1.name < contact2.name) {
+      return -1;
+    } else {
+      return 1;
+    }
   });
 });
 </script>
@@ -46,7 +78,7 @@ const listeContactFiltree = computed(() => {
     />
 
     <div class="liste">
-      <div class="contact" v-for="contact in listeContactFiltree">
+      <div class="contact" v-for="contact in listeContactFiltreeOrdonnee">
         <h3>{{ contact.name }}</h3>
         <p>{{ contact.phone }}</p>
       </div>
