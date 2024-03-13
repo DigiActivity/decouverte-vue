@@ -3,18 +3,22 @@ import { computed, ref } from "vue";
 
 const listeContact = ref([
   {
+    id: 1,
     name: "Félix Laviéville",
     phone: "+33.6.06.06.06.06",
   },
   {
+    id: 2,
     name: "Tutu",
     phone: "+33.6.06.827624",
   },
   {
+    id: 3,
     name: "Zizou",
     phone: "+9387535",
   },
   {
+    id: 4,
     name: "AAAAA",
     phone: "9284724",
   },
@@ -24,16 +28,29 @@ const inputName = ref("");
 const inputPhone = ref("");
 const inputSearch = ref("");
 
+const compteurContact = ref(4);
+
 function ajouterContact() {
   if (inputName.value === "" || inputPhone.value === "") {
     return;
   }
+
+  compteurContact.value++;
+
   listeContact.value.push({
+    id: compteurContact.value,
     name: inputName.value,
     phone: inputPhone.value,
   });
+
   inputName.value = "";
   inputPhone.value = "";
+}
+
+function supprimeContact(idASupprimer) {
+  listeContact.value = listeContact.value.filter((contact) => {
+    return contact.id !== idASupprimer;
+  });
 }
 
 // On veut une liste qui prenne en compte la recherche
@@ -44,7 +61,9 @@ const listeContactFiltree = computed(() => {
     // .filter() va parcourir le tableau
     // pour un élément donné, il vérifie quelque chose (true / false)
     // si true, alors l'élément est gardé, sinon, il est abandonné
-    return contact.name.includes(inputSearch.value);
+    const nomAComparer = contact.name.toLowerCase();
+    const rechercheAComparer = inputSearch.value.toLowerCase();
+    return nomAComparer.includes(rechercheAComparer);
   });
 });
 
@@ -79,8 +98,9 @@ const listeContactFiltreeOrdonnee = computed(() => {
 
     <div class="liste">
       <div class="contact" v-for="contact in listeContactFiltreeOrdonnee">
-        <h3>{{ contact.name }}</h3>
+        <h3>[{{ contact.id }}] {{ contact.name }}</h3>
         <p>{{ contact.phone }}</p>
+        <button @click="supprimeContact(contact.id)">Supprimer</button>
       </div>
     </div>
   </main>
@@ -136,7 +156,7 @@ div.formulaire > button {
 
 div.contact {
   display: grid;
-  grid-template-columns: 1fr 150px;
+  grid-template-columns: 1fr 150px auto;
   border: 1px solid gray;
   padding: 20px;
   gap: 50px;
